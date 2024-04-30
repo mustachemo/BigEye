@@ -1,11 +1,11 @@
 from dotenv import load_dotenv
 import os
-import logging
 from google.cloud import bigquery
 from google.oauth2 import service_account
+from configs.logger import get_logger
 
-# Set up logging
-logging.basicConfig(level=logging.INFO)
+logger = get_logger(__name__)
+
 
 def load_data_to_bigquery(df):
     load_dotenv()
@@ -35,6 +35,6 @@ def load_data_to_bigquery(df):
         job.result()  # Waits for the job to complete
 
         table = client.get_table(table_ref)
-        logging.info("Loaded {} rows and {} columns to {}".format(table.num_rows, len(table.schema), table_ref.path))
+        logger.info(f'Loaded {table.num_rows} rows and {len(table.schema)} columns to {table_ref.path}')
     except Exception as e:
-        logging.error(f'An error occurred: {e}')
+        logger.error(f'An error occurred: {e}')

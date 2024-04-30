@@ -1,8 +1,7 @@
 import os
-import logging
 from google.cloud import bigquery
 from google.oauth2 import service_account
-from configs import get_logger
+from configs.logger import get_logger
 
 # Set up logging
 logger = get_logger(__name__)
@@ -41,6 +40,7 @@ def extract_data_from_bigquery():
         df = query_job.to_dataframe()
         print(df)
         logger.info(f'Query returned {len(df)} rows')
+        return df
     except Exception as e:
         logger.error(f'An error occurred: {e}')
         exit(1)
