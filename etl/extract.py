@@ -3,7 +3,7 @@ from google.cloud import bigquery
 from google.oauth2 import service_account
 from configs.logger import get_logger
 
-# Set up logging
+
 logger = get_logger(__name__)
 
 # Check if environment variable is set
@@ -18,28 +18,43 @@ def extract_data_from_bigquery():
         credentials = service_account.Credentials.from_service_account_file(credentials_path)
         client = bigquery.Client(credentials=credentials, project=credentials.project_id)
 
-        dataset_ref = client.dataset("gdeltv2", project="gdelt-bq")
-        dataset = client.get_dataset(dataset_ref)
-        tables = list(client.list_tables(dataset))
-        logger.info(f'Dataset {dataset.dataset_id} contains {len(tables)} tables')
-
         query = """
-        SELECT GLOBALEVENTID, SQLDATE, MonthYear, Actor1Name, Actor2Name, EventCode, SourceURL
-        FROM `gdelt-bq.gdeltv2.events`
-        WHERE Year = @year AND Actor1CountryCode = 'USA'
-        AND (Actor1Geo_CountryCode = 'US' AND Actor1Geo_ADM1Code LIKE 'US%')
-        LIMIT 10;
+SELECT 
+    GLOBALEVENTID,
+    SQLDATE,
+    Actor1Name,
+    Actor2Name,
+    EventCode,
+    ActionGeo_FullName,
+    ActionGeo_CountryCode,
+    ActionGeo_ADM1Code,
+    SOURCEURL
+FROM 
+    `gdelt-bq.gdeltv2.events`
+WHERE 
+    SQLDATE IS NOT NULL AND
+    Actor1Name IS NOT NULL AND
+    Actor2Name IS NOT NULL AND
+    EventCode IS NOT NULL AND
+    ActionGeo_FullName IS NOT NULL AND
+    ActionGeo_CountryCode IS NOT NULL AND
+    ActionGeo_ADM1Code IS NOT NULL AND
+    SOURCEURL IS NOT NULL
+    AND ActionGeo_CountryCode = 'US'  -- This line filters for events in the United States
+    AND year = @year
+ORDER BY
+    SQLDATE DESC
+LIMIT 1000;
         """
         job_config = bigquery.QueryJobConfig(
             query_parameters=[
-                bigquery.ScalarQueryParameter("year", "INT64", 2021)
+                bigquery.ScalarQueryParameter("year", "INT64", 2024)
             ]
         )
 
         query_job = client.query(query, job_config=job_config)
         df = query_job.to_dataframe()
-        print(df)
-        logger.info(f'Query returned {len(df)} rows')
+        logger.info(f'Query returned {len(df)} rows and {len(df.columns)} columns')
         return df
     except Exception as e:
         logger.error(f'An error occurred: {e}')

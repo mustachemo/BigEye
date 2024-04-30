@@ -26,7 +26,7 @@ dictConfig({
     'handlers': {
         'console': {
             'class': 'logging.StreamHandler',
-            'level': 'WARNING',
+            'level': 'DEBUG',
             'formatter': 'simple',
             'stream': 'ext://sys.stdout',
             'filters': ['context_filter'],
