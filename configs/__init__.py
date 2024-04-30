@@ -2,13 +2,11 @@ import logging
 from logging.config import dictConfig
 from logging.handlers import RotatingFileHandler
 
-# Define a filter
 class ContextFilter(logging.Filter):
     def filter(self, record):
         record.module_name = __name__
         return True
 
-# Logger configuration
 dictConfig({
     'version': 1,
     'filters': {
@@ -18,7 +16,7 @@ dictConfig({
     },
     'formatters': {
         'detailed': {
-            'format': '%(asctime)s - %(name)s - [%(levelname)s] - %(message)s (%(filename)s:%(lineno)d, %(funcName)s)',
+            'format': '%(asctime)s - %(name)s - (%(filename)s:%(lineno)d, %(funcName)s) - [%(levelname)s] - %(message)s',
             'datefmt': '%Y-%m-%d %H:%M:%S'
         },
         'simple': {

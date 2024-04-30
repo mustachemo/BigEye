@@ -1,8 +1,3 @@
-import etl.extract as extract
-import etl.transform as transform
-import etl.load as load
+from etl.extract import extract_data_from_bigquery
 
-df = extract.query()
-df = transform.transform(df)
-load.load(df)
-
+extract_data_from_bigquery()
