@@ -1,6 +1,6 @@
-import extract
-import transform
-import load
+import etl.extract as extract
+import etl.transform as transform
+import etl.load as load
 
 df = extract.query()
 df = transform.transform(df)
