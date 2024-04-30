@@ -25,13 +25,15 @@ def extract_data_from_bigquery():
                     `bigquery-public-data.hacker_news.full`
                 WHERE
                     score IS NOT NULL
+                    AND text IS NOT NULL
+                    AND EXTRACT(YEAR FROM timestamp) = @year
                 ORDER BY
                     score DESC
                 LIMIT 1000;
         """
         job_config = bigquery.QueryJobConfig(
             query_parameters=[
-                bigquery.ScalarQueryParameter("year", "INT64", 2024)
+                bigquery.ScalarQueryParameter("year", "INT64", 2022),
             ]
         )
 
