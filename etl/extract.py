@@ -32,4 +32,3 @@ job_config = bigquery.QueryJobConfig(
 query_job = client.query(query, job_config=job_config)
 df = query_job.to_dataframe()
 print(df.head())
-
