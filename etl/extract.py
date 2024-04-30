@@ -19,32 +19,15 @@ def extract_data_from_bigquery():
         client = bigquery.Client(credentials=credentials, project=credentials.project_id)
 
         query = """
-SELECT 
-    GLOBALEVENTID,
-    SQLDATE,
-    Actor1Name,
-    Actor2Name,
-    EventCode,
-    ActionGeo_FullName,
-    ActionGeo_CountryCode,
-    ActionGeo_ADM1Code,
-    SOURCEURL
-FROM 
-    `gdelt-bq.gdeltv2.events`
-WHERE 
-    SQLDATE IS NOT NULL AND
-    Actor1Name IS NOT NULL AND
-    Actor2Name IS NOT NULL AND
-    EventCode IS NOT NULL AND
-    ActionGeo_FullName IS NOT NULL AND
-    ActionGeo_CountryCode IS NOT NULL AND
-    ActionGeo_ADM1Code IS NOT NULL AND
-    SOURCEURL IS NOT NULL
-    AND ActionGeo_CountryCode = 'US'  -- This line filters for events in the United States
-    AND year = @year
-ORDER BY
-    SQLDATE DESC
-LIMIT 1000;
+                SELECT 
+                *
+                FROM 
+                    `bigquery-public-data.hacker_news.full`
+                WHERE
+                    score IS NOT NULL
+                ORDER BY
+                    score DESC
+                LIMIT 1000;
         """
         job_config = bigquery.QueryJobConfig(
             query_parameters=[
